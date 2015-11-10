@@ -81,8 +81,8 @@
 - name: increase ulimit for root
   sudo: yes
   copy:
-    dest: /etc/security/limits.d/10-root-nofiles.conf
-    src: 10-root-nofiles.conf
+    dest: /etc/security/limits.d/90-root-nofiles.conf
+    src: 90-root-nofiles.conf
 
 - include: users.yml
 - include: ssl.yml

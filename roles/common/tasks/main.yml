@@ -74,16 +74,9 @@
   sudo: yes
   sysctl:
     name: fs.file-max
-    value: 65000
+    value: 65536
     sysctl_set: true
     reload: yes
-
-- name: increase ulimit for root
-  sudo: yes
-  lineinfile:
-    dest: /root/.bashrc
-    line: "ulimit -n 65000"
-    insertafter: "# .bashrc"
 
 - include: users.yml
 - include: ssl.yml

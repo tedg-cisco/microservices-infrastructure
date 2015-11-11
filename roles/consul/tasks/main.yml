@@ -8,6 +8,16 @@
     - consul
     - bootstrap
 
+- name: increase nofiles limit for consul.service
+  sudo: yes
+  lineinfile:
+    dest: /etc/systemd/system/multi-user.target.wants/consul.service
+    line: "LimitNOFILE=65536"
+    insertafter: "[Service]"
+  tags:
+    - consul
+    - bootstrap
+
 - name: install consul-ui
   sudo: yes
   yum:

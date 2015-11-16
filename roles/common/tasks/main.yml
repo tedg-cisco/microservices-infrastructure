@@ -80,7 +80,7 @@
   sudo: yes
   sysctl:
     name: fs.file-max
-    value: 65000
+    value: "65536"
     sysctl_set: true
     reload: yes
 

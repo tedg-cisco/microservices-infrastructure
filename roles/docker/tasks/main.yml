@@ -9,6 +9,14 @@
     - docker
     - bootstrap
 
+- name: add docker group
+  sudo: yes
+  group:
+    name: docker
+    state: present
+  tags:
+    - docker
+    - bootstrap
 
 - name: install docker packages
   sudo: yes

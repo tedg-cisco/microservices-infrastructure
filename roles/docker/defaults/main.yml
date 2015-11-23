@@ -7,8 +7,3 @@ docker_lvm_data_volume_size: 40%FREE
 docker_lvm_data_volume_size_min: 2G
 
 docker_lvm_auto_extend_pool: yes
-
-docker_gc:
-  exclude_containers: 
-    - "# this is in an EXIT status most of the time, but is needed intact"
-    - "{{ zookeeper_data_volume }}"

@@ -6,9 +6,10 @@
   tags:
     - docker
 
-- name: exclude zookeeper data volume from garbage collection
+- name: add default container exclusions to docker cleanup
   sudo: yes
-  lineinfile:
+  template:
     dest: /etc/docker-cleanup/docker-gc-exclude-containers
-    line: "{{zookeeper_data_volume}}"
-    state: present
+    src: docker-gc-exclude-containers.conf.j2
+  tags:
+    - docker

@@ -68,7 +68,7 @@ resource "openstack_compute_instance_v2" "control" {
   network               = { uuid = "${ openstack_networking_network_v2.ms-network.id }" }
   volume = {
     volume_id = "${element(openstack_blockstorage_volume_v1.mi-control-lvm.*.id, count.index)}"
-    device = "/dev/vdb"
+    device = "/dev/vdc"
   }
   metadata              = {
                             dc = "${var.datacenter}"
@@ -88,7 +88,7 @@ resource "openstack_compute_instance_v2" "worker" {
   network               = { uuid = "${ openstack_networking_network_v2.ms-network.id }" }
   volume = {
     volume_id = "${element(openstack_blockstorage_volume_v1.mi-worker-lvm.*.id, count.index)}"
-    device = "/dev/vdb"
+    device = "/dev/vdc"
   }
   metadata              = {
                             dc = "${var.datacenter}"
@@ -109,7 +109,7 @@ resource "openstack_compute_instance_v2" "edge" {
 
   volume = {
     volume_id = "${element(openstack_blockstorage_volume_v1.mi-edge-lvm.*.id, count.index)}"
-    device = "/dev/vdb"
+    device = "/dev/vdc"
   }
 
   metadata = {

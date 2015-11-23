@@ -9,7 +9,6 @@
     - docker
     - bootstrap
 
-
 - name: install docker packages
   sudo: yes
   yum:
@@ -100,3 +99,4 @@
     - bootstrap # needed to install Docker images during bootstrap
 
 - include: collectd.yml
+- include: cleanup-rpm.yml

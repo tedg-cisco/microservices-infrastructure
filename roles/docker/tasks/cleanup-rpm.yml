@@ -1,0 +1,14 @@
+- name: install docker-cleanup package
+  sudo: yes
+  yum:
+    name: "https://dl.bintray.com/asteris/mantl-rpm/docker-cleanup-0.0.1-1.noarch.rpm"
+    state: present
+  tags:
+    - docker
+
+- name: exclude zookeeper data volume from garbage collection
+  sudo: yes
+  lineinfile:
+    dest: /etc/docker-cleanup/docker-gc-exclude-containers
+    line: "{{zookeeper_data_volume}}"
+    state: present

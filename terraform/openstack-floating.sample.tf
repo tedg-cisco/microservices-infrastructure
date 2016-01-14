@@ -22,6 +22,8 @@ module "dc2-hosts-floating" {
   control_count = 3
   worker_count = 3
   edge_count = 2
+  short_name = "mi"
+  host_domain = "novalocal"
   floating_pool = ""
   external_net_id = ""
   control_data_volume_size = 20

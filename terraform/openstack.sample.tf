@@ -23,6 +23,8 @@ module "dc2-hosts" {
   control_count = 3
   worker_count = 3
   edge_count = 2
+  short_name = "mi"
+  host_domain = "novalocal"
   security_groups = ""
   control_data_volume_size = 20
   worker_data_volume_size = 100

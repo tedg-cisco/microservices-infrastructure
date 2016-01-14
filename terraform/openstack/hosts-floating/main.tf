@@ -17,6 +17,7 @@ variable worker_count {}
 variable worker_flavor_name { }
 variable security_groups { default = "default" }
 variable short_name { default = "mi" }
+variable host_domain { default = "novalocal" }
 variable ssh_user { default = "centos" }
 variable subnet_cidr { default = "10.10.10.0/24" }
 variable tenant_id { }
@@ -26,6 +27,33 @@ provider "openstack" {
   auth_url	= "${ var.auth_url }"
   tenant_id	= "${ var.tenant_id }"
   tenant_name	= "${ var.tenant_name }"
+}
+
+resource "template_file" "cloud-init-control" {
+  count = "${ var.control_count }"
+  template = "terraform/openstack/cloud-config/user-data.yml"
+  vars {
+    hostname = "${ var.short_name }-control-${ format("%02d", count.index+1) }"
+    host_domain = "${ var.host_domain }"
+  }
+}
+
+resource "template_file" "cloud-init-worker" {
+  count = "${ var.worker_count }"
+  template = "terraform/openstack/cloud-config/user-data.yml"
+  vars {
+    hostname = "${ var.short_name }-worker-${ format("%03d", count.index+1) }"
+    host_domain = "${ var.host_domain }"
+  }
+}
+
+resource "template_file" "cloud-init-edge" {
+  count = "${ var.edge_count }"
+  template = "terraform/openstack/cloud-config/user-data.yml"
+  vars {
+    hostname = "${ var.short_name }-edge-${ format("%02d", count.index+1) }"
+    host_domain = "${ var.host_domain }"
+  }
 }
 
 resource "openstack_blockstorage_volume_v1" "mi-control-lvm" {
@@ -76,6 +104,7 @@ resource "openstack_compute_instance_v2" "control" {
                             ssh_user = "${ var.ssh_user }"
                           }
   count                 = "${ var.control_count }"
+  user_data             = "${ element(template_file.cloud-init-control.*.rendered, count.index) }"
 }
 
 resource "openstack_compute_instance_v2" "worker" {
@@ -96,6 +125,7 @@ resource "openstack_compute_instance_v2" "worker" {
                             ssh_user = "${ var.ssh_user }"
                           }
   count                 = "${ var.worker_count }"
+  user_data             = "${ element(template_file.cloud-init-worker.*.rendered, count.index) }"
 }
 
 resource "openstack_compute_instance_v2" "edge" {
@@ -119,6 +149,7 @@ resource "openstack_compute_instance_v2" "edge" {
   }
 
   count = "${var.edge_count}"
+  user_data = "${ element(template_file.cloud-init-edge.*.rendered, count.index) }"
 }
 
 resource "openstack_compute_floatingip_v2" "ms-control-floatip" {

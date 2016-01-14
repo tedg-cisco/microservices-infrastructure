@@ -49,7 +49,6 @@
   when: docker_already_set_up_with_devicemapper.stdout == "NOT_SET"
   tags:
     - docker
-    - bootstrap
 
 - include: lvm.yml
   when: docker_lvm_backed_devicemapper

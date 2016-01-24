@@ -1,0 +1,116 @@
+# -*- mode: conf -*-
+# vi: set ft=conf :
+
+### Global options
+
+[hekad]
+hostname = "{{ inventory_hostname }}"
+
+### Inputs and decoders
+
+# Decoder for journalctl output with `-o json`.
+[JsonDecoder]
+type = "SandboxDecoder"
+filename = "lua_decoders/json.lua"
+    [JsonDecoder.config]
+    payload_keep = false
+    map_fields = true
+    # The following options map JSON fields to Heka message fields
+    Severity = "PRIORITY"
+    Payload = "MESSAGE"
+    Hostname = "_HOSTNAME"
+    Pid = "_PID"
+    Uuid = "_MACHINE_ID"
+    Timestamp = "__REALTIME_TIMESTAMP"
+
+# Get logs from systemd unit files when appropriate for this role
+{% for current_role, units in systemd_units.iteritems() %}
+{% if role == current_role %}
+{% for unit in units %}
+[{{ unit }}]
+type = "ProcessInput"
+decoder = "JsonDecoder"
+ticker_interval = {{ systemd_interval }}
+stdout = true
+stderr = false
+    [{{ unit }}.command.0]
+    bin = "/usr/bin/journalctl"
+    args = [
+        "-u", "{{ unit }}",
+        "-l", "--no-pager",                   {# Print full text to stdout  #}
+        "-o", "json",                         {# Output to decodable JSON   #}
+        "--since", "-{{ systemd_interval }}s" {# Don't double/miss any logs #}
+    ]
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+# Verify which files are matched with `heka-logstreamer -config=/etc/heka.toml`
+# This captures ALL mesos logs on every machine on which they can be found
+{% if role in ["control", "worker"] %}
+{% for r in ["control", "worker"] %}
+[mesos-{{ r }}]
+type = "LogstreamerInput"
+hostname = "{{ inventory_hostname }}"
+log_directory = "/var/log/mesos/"
+file_match = '.*{% if r == "worker" %}slave{% else %}master{% endif %}\.(?P<Level>(INFO|WARNING|ERROR|FATAL))'
+differentiator = [ "mesos-{{ r }}-", "Level" ]
+{% endfor %}
+{% endif %}
+
+[RsyslogDecoder]
+type = "SandboxDecoder"
+filename = "lua_decoders/rsyslog.lua"
+[rsyslog]
+type = "HttpListenInput"
+decoder = "RsyslogDecoder"
+address = "127.0.0.1:1514"
+
+[collectd]
+type = "UdpInput"
+address = "127.0.0.1:25826"
+
+{% if collect_stats %}
+[StatAccumInput]
+ticker_interval = 3
+emit_in_fields = true
+[statsd]
+type = "StatsdInput"
+stat_accum_name = "StatAccumInput"
+{% endif %}
+
+### Encoders and outputs
+
+# Will append newlines, which is necessary for JSON journald logs
+[PayloadEncoder]
+
+{% if heka_output == "kafka" %}
+[KafkaOutput]
+encoder = "PayloadEncoder"
+{% for key, val in heka_kafka_output.iteritems() %}
+{{ key }} = "{{ val | to_nice_json }}"
+{% endfor %}
+
+{% elif heka_output == "elasticsearch" %}
+[ESLogstashV0Encoder]
+es_index_from_timestamp = true
+type_name = "%{Type}"
+[ElasticSearchOutput]
+encoder = "ESLogstashV0Encoder"
+{% for key, val in heka_elasticsearch_output.iteritems() %}
+{{ key }} = "{{ val }}"
+{% endfor %}
+
+{% elif heka_output == "file" %}
+[FileOutput]
+encoder = "PayloadEncoder"
+flush_operator = "AND"
+{% for key, val in heka_file_output.iteritems() %}
+{{ key }} = "{{ val }}"
+{% endfor %}
+
+{% else %} {# No output or stdout was specified, log to stdout #}
+[LogOutput]
+encoder = "PayloadEncoder"
+message_matcher = "{{ stdout_message_matcher }}"
+{% endif %}

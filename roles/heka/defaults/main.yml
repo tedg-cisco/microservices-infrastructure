@@ -1,0 +1,40 @@
+---
+heka_version: 0.10.0
+heka_rpm_url: "https://github.com/mozilla-services/heka/releases/download/v{{ heka_version }}/heka-{{ heka_version | regex_replace('\\.', '_') }}-linux-amd64.rpm"
+
+# See the README.rst for descriptions of these variables
+collect_stats: false
+systemd_interval: 10
+systemd_units:
+  control:
+    - docker
+    - marathon
+    - consul
+    - zookeeper
+  worker:
+    - docker
+    - consul
+  edge:
+    - traefik
+
+heka_output: stdout
+stdout_message_matcher: "TRUE"
+
+# This file will be owned by the user that runs heka, which is the root user
+#heka_file_output:
+  #message_matcher: "TRUE"
+  #path: "/var/log/heka.log"
+  #perm: "666"
+
+#heka_elasticsearch_output:
+  #message_matcher: "TRUE"
+  #server: "elasticsearch.example.com:port"
+  #username: "user"
+  #password: "pass"
+  #flush_interval: 50
+
+#heka_kafka_output:
+  #message_matcher: "TRUE"
+  # addrs is a list of broker addresses and ports
+  #addrs: ["broker1:port", "broker2:port", ...]
+  #topic: "heka"

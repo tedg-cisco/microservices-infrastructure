@@ -1,0 +1,12 @@
+# -*- mode: systemd -*-
+# vi: set ft=systemd :
+[Unit]
+Description=heka - Data collection and processing made easy.
+
+[Service]
+ExecStart=/bin/hekad
+ExecStop=/usr/bin/pkill hekad
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+---
+- name: reload systemd daemon
+  sudo: yes
+  command: systemctl daemon-reload
+  tags:
+    - heka
+
+- name: enable and start hekad
+  sudo: yes
+  service:
+    name: hekad
+    enabled: yes
+    state: started
+  tags:
+    - heka

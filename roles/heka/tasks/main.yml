@@ -1,0 +1,64 @@
+---
+- name: create necessary heka and log directories
+  become: yes
+  file:
+    state: directory
+    path: "{{ item }}"
+    mode: 0644
+  with_items:
+    - /var/log/
+    - /var/log/mesos
+    - /var/log/zookeeper
+    - /var/cache/hekad
+  tags:
+    - heka
+    - bootstrap
+
+- name: configure heka
+  become: yes
+  template:
+    force: yes
+    src: hekad.toml.j2
+    dest: /etc/hekad.toml
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - heka
+
+# Ansible's yum module doesn't effectively check whether or not an RPM is
+# installed if "name" is a url, so we have to check manually to avoid waiting.
+- name: check if heka is installed
+  command: hekad --version
+  register: heka_installed
+  failed_when: false
+  changed_when: false
+  tags:
+    - heka
+    - bootstrap
+
+- name: install rpm from url
+  become: yes
+  yum:
+    name: "{{ heka_rpm_url }}"
+    state: present
+  # Install this RPM when the host has no heka or the wrong version
+  when: heka_installed.rc != 0 or heka_installed.stdout.find(heka_version) < 0
+  tags:
+    - heka
+    - bootstrap
+
+- name: copy systemd service file
+  become: yes
+  copy:
+    src: hekad.service
+    dest: /usr/lib/systemd/system/hekad.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload systemd daemon
+    - enable and start hekad
+  tags:
+    - heka
+    - bootstrap

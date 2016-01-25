@@ -92,5 +92,3 @@
     - marathon
 
 - include: jobs.yml
-
-- include: distributive.yml

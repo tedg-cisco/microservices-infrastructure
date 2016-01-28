@@ -2,30 +2,38 @@ Route53
 =======
 
 Terraform can use ``aws_route53_record`` resources to provide DNS records for
-your cluster. For configuration examples, check the following section in the
-``aws.sample.tf`` file in the ``terraform/`` directory.
+your cluster.
 
-.. code-block:: javascript
-
-   module "route53-dns" {
-     source = "./terraform/route53/dns"
-     short_name = "mi"
-     control_count = 3
-     worker_count = 3
-     domain = "example.com"
-     hosted_zone_id = "XXXXXXXXX"
-     control_ips = "${module.aws-dc.control_ips}"
-     worker_ips = "${module.aws-dc.worker_ips}"
-   }
-
-You can find your own hosted zone ID in your AWS Route 53 console.
+In addition to the :doc:`normal DNS variables <dns>`, you will need to specify
+the ``hosted_zone_id`` parameter. You can find your own hosted zone ID in your
+AWS Route 53 console.
 
 .. image:: /_static/aws_route53_zone_id.png
    :alt: AWS Route53 Hosted Zone Id example
 
-Just like :doc:`dnsimple`, the Route 53 integration will provide these A-type
-records:
+Route53 uses your normal :doc:`aws` provider credentials.
 
-- ``[short-name]-control-[nn].[domain]``
-- ``[short-name]-worker-[nnn].[domain]``
-- ``*.[short-name]-lb.[domain]``
+In your ``aws.tf``, you will want to uncomment the aws-elb module:
+
+.. code-block:: json
+
+  # Example setup for an AWS Route53
+  module "route53" {
+    source = "./terraform/aws/route53/dns"
+    control_count = "${var.control_count}"
+    control_ips = "${module.control-nodes.ec2_ips}"
+    domain = "my-domain.com"
+    edge_count = "${var.edge_count}"
+    edge_ips = "${module.edge-nodes.ec2_ips}"
+    elb_fqdn = "${module.aws-elb.fqdn}"
+    hosted_zone_id = "XXXXXXXXXXXX"
+    short_name = "${var.short_name}"
+    subdomain = ".dev"
+    traefik_elb_fqdn = "${module.traefik-elb.fqdn}"
+    traefik_zone_id = "${module.traefik-elb.zone_id}"
+    worker_count = "${var.worker_count}"
+    worker_ips = "${module.worker-nodes.ec2_ips}"
+  }
+
+This module assumes you set-up an ELB, if not you will need to comment out the ELB section 
+and references in the module. 

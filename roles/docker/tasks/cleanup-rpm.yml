@@ -6,13 +6,20 @@
   tags:
     - docker
 
+- name: add default image exclusions to docker cleanup
+  sudo: yes
+  lineinfile:
+    dest: /etc/docker-cleanup/docker-gc-exclude
+    line: "{{ item }}"
+  with_items: "{{ docker_cleanup_excludes }}"
+  tags:
+    - docker
+
 - name: add default container exclusions to docker cleanup
   sudo: yes
   lineinfile:
     dest: /etc/docker-cleanup/docker-gc-exclude-containers
     line: "{{ item }}"
-  with_items:
-    - "# this is in an EXIT status most of the time, but is needed intact"
-    - "{{ zookeeper_data_volume }}"
+  with_items: "{{ docker_cleanup_container_excludes }}"
   tags:
     - docker

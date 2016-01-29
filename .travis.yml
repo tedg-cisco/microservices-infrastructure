@@ -10,7 +10,7 @@ env:
 
 install: "pip install -r requirements.txt"
 before_script:
-  - ssh-keygen -N '' -f ~/.ssh/id_rsa && eval $(ssh-agent) && ssh-add ~/.id_rsa
+  - ssh-keygen -N '' -f ~/.ssh/id_rsa && eval $(ssh-agent) && ssh-add ~/.ssh/id_rsa
   - ln -sf $ANSIBLE_PLAYBOOK terraform.yml
   - ln -sf $TERRAFORM_FILE terraform.tf
   - mkdir $HOME/bin && export PATH=$PATH:$HOME/bin

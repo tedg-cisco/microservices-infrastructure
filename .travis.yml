@@ -15,6 +15,7 @@ before_script:
   - curl -SL -o terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
   - unzip -d $HOME/bin terraform.zip 
 script: testing/integration-test.sh
+after_success: echo slack notification here
 
 addons:
   apt:

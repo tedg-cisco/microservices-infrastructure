@@ -1,0 +1,22 @@
+language: python
+env:
+  - ANSIBLE_PLAYBOOK=terraform.sample.yml
+  - PATH=$PATH:$HOME/bin
+  - TERRAFORM_FILE=testing/aws.tf
+  - TERRAFORM_FILE=testing/do.tf
+  - TERRAFORM_FILE=testing/gce.tf
+  - TERRAFORM_VERSION=0.6.8
+
+install: "pip install -r requirements.txt"
+before_script:
+  - ln -sf $ANSIBLE_PLAYBOOK terraform.yml
+  - ln -sf $TERRAFORM_FILE terraform.tf
+  - mkdir $HOME/bin
+  - curl -SL -o terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+  - unzip -d $HOME/bin terraform.zip 
+script: testing/integration-test.sh
+
+addons:
+  apt:
+    packages:
+      - unzip

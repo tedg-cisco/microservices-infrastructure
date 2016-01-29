@@ -1,12 +1,12 @@
 language: python
 env:
   matrix:
-    - TERRAFORM_FILE=testing/aws.tf ANSIBLE_PLAYBOOK=terraform.sample.yml
-    - TERRAFORM_FILE=testing/do.tf  ANSIBLE_PLAYBOOK=terraform.sample.yml
-    - TERRAFORM_FILE=testing/gce.tf ANSIBLE_PLAYBOOK=terraform.sample.yml
-    - TERRAFORM_FILE=testing/aws.tf ANSIBLE_PLAYBOOK=kubernetes.yml
-    - TERRAFORM_FILE=testing/do.tf  ANSIBLE_PLAYBOOK=kubernetes.yml
-    - TERRAFORM_FILE=testing/gce.tf ANSIBLE_PLAYBOOK=kubernetes.yml
+     - TERRAFORM_FILE=testing/aws.tf ANSIBLE_PLAYBOOK=terraform.sample.yml
+    # - TERRAFORM_FILE=testing/do.tf  ANSIBLE_PLAYBOOK=terraform.sample.yml
+    # - TERRAFORM_FILE=testing/gce.tf ANSIBLE_PLAYBOOK=terraform.sample.yml
+    # - TERRAFORM_FILE=testing/aws.tf ANSIBLE_PLAYBOOK=kubernetes.yml
+    # - TERRAFORM_FILE=testing/do.tf  ANSIBLE_PLAYBOOK=kubernetes.yml
+    # - TERRAFORM_FILE=testing/gce.tf ANSIBLE_PLAYBOOK=kubernetes.yml
 
 install: "pip install -r requirements.txt"
 before_script:
@@ -17,7 +17,7 @@ before_script:
   - export TERRAFORM_VERSION=0.6.8
   - curl -SL -o terraform.zip https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
   - unzip -d $HOME/bin terraform.zip 
-script: TF_VAR_build_number=$TRAVIS_BUILD_NUMBER testing/integration-test.sh
+script: TF_VAR_build_number=$TRAVIS_JOB_NUMBER testing/integration-test.sh
 after_success: echo slack notification here
 
 addons:

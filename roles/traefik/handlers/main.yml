@@ -1,8 +1,8 @@
 ---
 - name: reload consul
-  sudo: yes
+  become: yes
   command: systemctl reload consul
 
 - name: restart traefik
-  sudo: yes
+  become: yes
   command: systemctl restart traefik

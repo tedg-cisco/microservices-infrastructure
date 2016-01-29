@@ -1,6 +1,6 @@
 ---
 - name: deploy acl bootstrap
-  sudo: yes
+  become: yes
   when: consul_dc == consul_acl_datacenter
   copy:
     src: consul-acl-bootstrap.sh
@@ -11,7 +11,7 @@
     - acl
 
 - name: upsert agent acl
-  sudo: yes
+  become: yes
   when: consul_dc == consul_acl_datacenter
   run_once: yes
   command: /usr/local/bin/consul-acl-bootstrap.sh {{ consul_acl_master_token }} {{ consul_acl_agent_token }}
@@ -20,7 +20,7 @@
     - acl
 
 - name: create agent_acl consul config
-  sudo: yes
+  become: yes
   template:
     src: agent_acl.json.j2
     dest: /etc/consul/agent_acl.json
@@ -32,7 +32,7 @@
 - meta: flush_handlers
 
 - name: set default policy to deny
-  sudo: yes
+  become: yes
   replace:
     dest: /etc/consul/acl.json
     regexp: '"acl_default_policy": "allow"'

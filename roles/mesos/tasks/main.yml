@@ -1,6 +1,6 @@
 ---
 - name: install mesos packages
-  sudo: yes
+  become: yes
   yum:
     name: "{{ item }}"
     state: present
@@ -12,7 +12,7 @@
     - bootstrap
 
 - name: ensure consul.d is present
-  sudo: yes
+  become: yes
   file:
     path: "{{ consul_dir }}"
     state: directory

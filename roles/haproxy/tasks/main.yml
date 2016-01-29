@@ -6,14 +6,14 @@
     - haproxy
 
 - name: ensure haproxy docker image is present
-  sudo: yes
+  become: yes
   command: /usr/bin/docker pull {{ haproxy_image }}:{{ haproxy_image_tag }}
   tags:
     - haproxy
     - bootstrap
 
 - name: set haproxy environment
-  sudo: yes
+  become: yes
   template:
     src: haproxy.j2
     dest: /etc/default/haproxy
@@ -23,7 +23,7 @@
     - haproxy
 
 - name: configure haproxy
-  sudo: yes
+  become: yes
   template:
     src: haproxy.service.j2
     dest: /usr/lib/systemd/system/haproxy.service

@@ -1,5 +1,5 @@
 - name: restart nginx-mantlui
-  sudo: yes
+  become: yes
   service:
     name: nginx-mantlui
     state: restarted
@@ -7,7 +7,7 @@
     - mantlui
 
 - name: reload nginx-mantlui
-  sudo: yes
+  become: yes
   command: systemctl daemon-reload
   tags:
     - mantlui

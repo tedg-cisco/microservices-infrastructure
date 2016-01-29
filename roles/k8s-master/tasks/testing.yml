@@ -1,5 +1,5 @@
 - name: install latest kubernetes master 
-  sudo: yes
+  become: yes
   yum:
     pkg="kubernetes"
     state=latest

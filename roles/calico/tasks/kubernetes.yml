@@ -1,6 +1,6 @@
 ---
 - name: Calico directory for plugins
-  sudo: yes
+  become: yes
   file:
     path: /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/
     state: directory 
@@ -8,7 +8,7 @@
     - calico
 
 - name: Get calico-kubernetes plugin
-  sudo: yes
+  become: yes
   get_url: 
     url: https://github.com/projectcalico/calico-docker/releases/download/v0.5.4/calico_kubernetes
     dest: /usr/libexec/kubernetes/kubelet-plugins/net/exec/calico/calico

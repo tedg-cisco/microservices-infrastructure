@@ -1,6 +1,6 @@
 ---
 - name: install glusterfs-server
-  sudo: yes
+  become: yes
   yum:
     name: glusterfs-server
     state: present
@@ -8,7 +8,7 @@
     - glusterfs
 
 - name: install glusterd.service
-  sudo: yes
+  become: yes
   copy:
     src: glusterd.service
     dest: /etc/systemd/system/glusterd.service
@@ -17,7 +17,7 @@
     - glusterfs
 
 - name: enable services
-  sudo: yes
+  become: yes
   service:
     enabled: yes
     name: "{{ item }}"
@@ -28,7 +28,7 @@
     - glusterfs
 
 - name: start services
-  sudo: yes
+  become: yes
   service:
     state: started
     name: "{{ item }}"
@@ -48,7 +48,7 @@
 # set up clustering
 
 - name: probe servers
-  sudo: yes
+  become: yes
   run_once: true
   command: gluster peer probe {{ item }}.node.{{ consul_dns_domain }}
   with_items: play_hosts
@@ -56,7 +56,7 @@
     - glusterfs
 
 - name: make sure the number of connected hosts is correct
-  sudo: yes
+  become: yes
   run_once: yes
   shell: 'gluster peer status | grep -q "Number of Peers: {{ (play_hosts|count) - 1 }}"'
   changed_when: no
@@ -66,7 +66,7 @@
 # bricks
 
 - name: create volume for brick
-  sudo: yes
+  become: yes
   lvol:
     vg: "{{ volume_group_name }}"
     lv: "{{ glusterfs_brick_volume_name }}"
@@ -77,7 +77,7 @@
     - disk
 
 - name: format brick volume
-  sudo: yes
+  become: yes
   filesystem:
     dev: "{{ glusterfs_brick_device }}"
     fstype: xfs
@@ -88,7 +88,7 @@
     - disk
 
 - name: create mount point for brick volume
-  sudo: yes
+  become: yes
   file:
     state: directory
     name: "{{ glusterfs_brick_mount }}"
@@ -100,7 +100,7 @@
     - disk
 
 - name: mount brick disk
-  sudo: yes
+  become: yes
   mount:
     state: mounted
     name: "{{ glusterfs_brick_mount }}"
@@ -114,7 +114,7 @@
     - disk
 
 - name: ensure brick location is present
-  sudo: yes
+  become: yes
   file:
     state: directory
     path: "{{ glusterfs_brick_location }}"
@@ -123,7 +123,7 @@
 
 # volumes
 - name: create gluster_volume script
-  sudo: yes
+  become: yes
   template:
     src: gluster_volume.sh.j2
     dest: /etc/glusterfs/gluster_volume.sh
@@ -133,14 +133,14 @@
 
 - name: create volumes
   run_once: true
-  sudo: yes
+  become: yes
   command: /etc/glusterfs/gluster_volume.sh {{ item.name }}
   with_items: glusterfs_volumes
   tags:
     - glusterfs
 
 - name: start volumes
-  sudo: yes
+  become: yes
   run_once: true
   gluster_volume:
     name: "{{ item.name }}"
@@ -152,7 +152,7 @@
 # consul services
 
 - name: let consul use glusterfs commands for health checking
-  sudo: yes
+  become: yes
   template:
     src: consul-gluster-healthchecks.j2
     dest: /etc/sudoers.d/consul-gluster-healthchecks
@@ -160,7 +160,7 @@
     - glusterfs
 
 - name: create consul services and healthchecks
-  sudo: yes
+  become: yes
   template:
     src: "{{ item }}.j2"
     dest: /etc/consul/{{ item }}

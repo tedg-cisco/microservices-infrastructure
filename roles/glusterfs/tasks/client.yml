@@ -1,6 +1,6 @@
 ---
 - name: install glusterfs-fuse
-  sudo: yes
+  become: yes
   yum:
     name: glusterfs-fuse
     state: present
@@ -8,7 +8,7 @@
     - glusterfs
 
 - name: install mount helper unit
-  sudo: yes
+  become: yes
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest}}"
@@ -24,7 +24,7 @@
     - glusterfs
 
 - name: create mount points for volumes
-  sudo: yes
+  become: yes
   file:
     state: directory
     name: "{{ item.mount }}"
@@ -43,7 +43,7 @@
     - glusterfs
 
 - name: mount volumes
-  sudo: yes
+  become: yes
   mount:
     state: mounted
     name: "{{ item.mount }}"
@@ -55,14 +55,14 @@
     - glusterfs
 
 - name: enable mount helper
-  sudo: yes
+  become: yes
   shell: "systemctl enable mount-monitor@$(systemd-escape {{ item.mount }})"
   with_items: glusterfs_volumes
   tags:
     - glusterfs
 
 - name: create consul healthchecks
-  sudo: yes
+  become: yes
   template:
     src: glusterfs-mounts.json.j2
     dest: /etc/consul/glusterfs-mounts.json

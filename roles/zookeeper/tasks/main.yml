@@ -1,6 +1,6 @@
 ---
 - name: install netcat
-  sudo: yes
+  become: yes
   yum:
     name: nmap-ncat
     state: present
@@ -9,7 +9,7 @@
     - bootstrap
 
 - name: add mesosphere repository
-  sudo: yes
+  become: yes
   yum:
     name:  http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
     state: present
@@ -17,7 +17,7 @@
     - zookeeper
 
 - name: install zookeeper scripts
-  sudo: yes
+  become: yes
   copy:
     src: "{{ item }}"
     dest: /usr/local/bin
@@ -31,7 +31,7 @@
     - zookeeper
 
 - name: create zookeeper user
-  sudo: yes
+  become: yes
   user:
     name: "{{ zookeeper_os_user }}"
     state: present
@@ -40,13 +40,13 @@
 
 # Upgrade script MUST run between user creation and rpm installation
 - name: run zookeeper upgrade procedure, if applicable
-  sudo: yes
+  become: yes
   shell: "/usr/local/bin/zookeeper-update-mantl-0.5-0.6.sh {{ zookeeper_os_user }}"
   tags:
     - zookeeper
 
 - name: create zookeeper service override directory
-  sudo: yes
+  become: yes
   file:
     path: /etc/systemd/system/zookeeper.service.d
     state: directory
@@ -56,7 +56,7 @@
 # Override should be created before any other action trigger start/restart of zk
 # otherwise we get some files in zookeeper's dir with wrong permissions
 - name: create local docker service override
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/systemd/system/zookeeper.service.d/user.conf
     content: |
@@ -69,7 +69,7 @@
     - zookeeper
 
 - name: install zookeeper package
-  sudo: yes
+  become: yes
   yum:
     name: mesosphere-zookeeper
     state: present
@@ -77,7 +77,7 @@
     - zookeeper
 
 - name: create missing 'conf' symlink
-  sudo: yes
+  become: yes
   file:
     state: link
     src: /etc/zookeeper/conf
@@ -86,7 +86,7 @@
     - zookeeper    
 
 - name: create zookeeper auth digest
-  sudo: yes
+  become: yes
   shell: "/usr/local/bin/zookeeper_digest.sh  {{ zk_super_user }}:{{ zk_super_user_secret }}"
   register: zookeeper_auth_digest
   changed_when: no
@@ -95,7 +95,7 @@
     - zookeeper
 
 - name: create auth digest file
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/zookeeper/conf/zookeeper-env.sh
     content: |
@@ -107,7 +107,7 @@
     - zookeeper
 
 - name: create zookeeper log directory
-  sudo: yes
+  become: yes
   file:
     path: /var/log/zookeeper
     state: directory
@@ -119,7 +119,7 @@
     - zookeeper
 
 - name: create zookeeper data directory
-  sudo: yes
+  become: yes
   file:
     path: /var/lib/zookeeper/version-2
     state: directory
@@ -129,7 +129,7 @@
     - zookeeper
 
 - name: generate zookeeper consul services
-  sudo: yes
+  become: yes
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -142,7 +142,7 @@
     - zookeeper
 
 - name: generate zookeeper id
-  sudo: yes
+  become: yes
   template:
     src: myid.j2
     dest: /var/lib/zookeeper/myid
@@ -150,7 +150,7 @@
     - zookeeper
 
 - name: generate zookeeper config
-  sudo: yes
+  become: yes
   template:
     src: zoo.cfg.j2
     dest: /etc/zookeeper/conf/zoo.cfg
@@ -158,7 +158,7 @@
     - restart zookeeper
 
 - name: register zookeeper service
-  sudo: yes
+  become: yes
   service:
     enabled: yes
     name: "{{ zookeeper_service }}"
@@ -167,7 +167,7 @@
     - zookeeper
 
 - name: install zookeepercli package
-  sudo: yes
+  become: yes
   yum:
     name: https://github.com/outbrain/zookeepercli/releases/download/v1.0.10/zookeepercli-1.0.10-1.x86_64.rpm
     state: present

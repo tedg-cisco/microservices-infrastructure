@@ -1,12 +1,12 @@
 ---
 - name: restart calico
-  sudo: yes
+  become: yes
   service:
     name: calico
     state: restarted
 
 - name: restart mesos agent
-  sudo: yes
+  become: yes
   service:
     name: mesos-slave
     state: restarted

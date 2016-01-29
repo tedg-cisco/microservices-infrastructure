@@ -1,13 +1,13 @@
 ---
 - name: ensure nginx-mantlui docker image is present
-  sudo: yes
+  become: yes
   command: /usr/bin/docker pull {{ mantlui_nginx_image }}:{{ mantlui_nginx_image_tag }}
   tags:
     - mantlui
     - bootstrap
 
 - name: configure nginx-mantlui
-  sudo: yes
+  become: yes
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -23,7 +23,7 @@
     - mantlui
 
 - name: enable nginx-mantlui
-  sudo: yes
+  become: yes
   service:
     name: nginx-mantlui
     enabled: yes

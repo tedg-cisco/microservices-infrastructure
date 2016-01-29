@@ -1,6 +1,6 @@
 ---
 - name: install packages
-  sudo: yes
+  become: yes
   yum:
     name: "{{ item }}"
     state: latest
@@ -13,14 +13,14 @@
     - bootstrap
 
 - name: collect nameservers
-  sudo: yes
+  become: yes
   shell: "cat /etc/resolv.conf | grep -i '^nameserver' | cut -d ' ' -f2"
   register: nameservers_output
   tags:
     - dnsmasq
 
 - name: collect dns search list
-  sudo: yes
+  become: yes
   shell: "cat /etc/resolv.conf | grep -i '^search' | cut -d ' ' -f2- | tr ' ' '\n'"
   register: dns_search_list_output
   tags:
@@ -39,7 +39,7 @@
     - dnsmasq
 
 - name: ensure dnsmasq.d directory exists
-  sudo: yes
+  become: yes
   file:
     path: /etc/NetworkManager/dnsmasq.d
     state: directory
@@ -47,7 +47,7 @@
     - dnsmasq
 
 - name: configure dnsmasq for consul
-  sudo: yes
+  become: yes
   template:
     src: 10-consul
     dest: /etc/dnsmasq.d/10-consul
@@ -59,7 +59,7 @@
     - dnsmasq
 
 - name: configure dnsmasq for Kubernetes
-  sudo: yes
+  become: yes
   template:
     src: 20-kubernetes
     dest: /etc/dnsmasq.d/20-kubernetes
@@ -71,7 +71,7 @@
     - dnsmasq
 
 - name: enable dnsmasq
-  sudo: yes
+  become: yes
   service:
     name: dnsmasq
     state: started
@@ -80,7 +80,7 @@
     - dnsmasq
 
 - name: configure networkmanager for dnsmasq
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/NetworkManager/NetworkManager.conf
     line: "dns=none"
@@ -91,12 +91,12 @@
     - dnsmasq
 
 - name: List network-scripts which need fixup
-  sudo: yes
+  become: yes
   shell: "find /etc/sysconfig/network-scripts -name 'ifcfg-*'"
   register: list_of_network_scripts
 
 - name: fixing PEERDNS in network-scripts
-  sudo: yes
+  become: yes
   lineinfile:
     dest: "{{ item }}"
     line: "PEERDNS=no"
@@ -108,7 +108,7 @@
     - dnsmasq
 
 - name: add dnsmasq to /etc/resolv.conf
-  sudo: yes
+  become: yes
   template:
     src: resolv.conf.j2
     dest: /etc/resolv.conf

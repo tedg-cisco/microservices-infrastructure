@@ -1,12 +1,12 @@
 ---
 - name: reload systemd daemon
-  sudo: yes
+  become: yes
   command: systemctl daemon-reload
   tags:
     - logstash
 
 - name: enable and start logstash
-  sudo: yes
+  become: yes
   service:
     name: logstash
     enabled: yes
@@ -15,7 +15,7 @@
     - logstash
 
 - name: restart logstash
-  sudo: yes
+  become: yes
   service:
     name: logstash
     state: restarted
@@ -23,7 +23,7 @@
     - logstash
 
 - name: restart rsyslog
-  sudo: yes
+  become: yes
   service:
     name: rsyslog
     state: restarted

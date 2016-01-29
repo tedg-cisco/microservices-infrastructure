@@ -1,6 +1,6 @@
 ---
 - name: install consul
-  sudo: yes
+  become: yes
   yum:
     name: "{{ item }}"
     state: present
@@ -13,7 +13,7 @@
     - bootstrap
 
 - name: configure consul
-  sudo: yes
+  become: yes
   template:
     src: "{{ item }}.j2"
     dest: /etc/consul/{{ item }}
@@ -28,7 +28,7 @@
     - consul
 
 - name: register docker with consul
-  sudo: yes
+  become: yes
   copy:
     src: docker-service.json
     dest: /etc/consul
@@ -40,7 +40,7 @@
     - consul
 
 - name: deploy tls files
-  sudo: yes
+  become: yes
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -59,7 +59,7 @@
     - consul
 
 - name: install scripts
-  sudo: yes
+  become: yes
   copy:
     src: "{{ item }}"
     dest: /usr/local/bin/
@@ -72,7 +72,7 @@
     - consul
 
 - name: enable consul
-  sudo: yes
+  become: yes
   service:
     name: consul
     enabled: yes
@@ -91,7 +91,7 @@
     - consul
 
 - name: create secure acl
-  sudo: yes
+  become: yes
   run_once: yes
   command: consul-cli acl-update --token={{ consul_acl_master_token }} --name="Mantl Secure Token" --rule='key:secure:write' --rule='service::write' {{ consul_acl_secure_token }}
   tags:

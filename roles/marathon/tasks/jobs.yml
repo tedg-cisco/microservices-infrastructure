@@ -1,7 +1,7 @@
 ---
 - name: ensure job docker images are present
   when: provider == "vagrant"
-  sudo: yes
+  become: yes
   command: /usr/bin/docker pull {{ item }}
   with_items:
     - "{{ mesos_consul_image }}:{{ mesos_consul_image_tag }}"
@@ -11,7 +11,7 @@
     - bootstrap
 
 - name: create json files for jobs
-  sudo: yes
+  become: yes
   template:
     src: '{{ item }}.json.j2'
     dest: /etc/marathon/{{ item }}.json
@@ -23,7 +23,7 @@
 
 - name: start jobs
   run_once: true
-  sudo: yes
+  become: yes
   command: 'curl -X PUT -d@/etc/marathon/{{ item }}.json -H "Content-Type: application/json" http://localhost:18080/v2/apps/{{ item }}'
   changed_when: false
   failed_when: "'deploymentId' not in result.stdout"

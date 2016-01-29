@@ -13,7 +13,7 @@
   command: "/usr/local/bin/zookeeper-wait-for-listen.sh localhost"
 
 - name: create zookeeper acl
-  sudo: yes
+  become: yes
   run_once: yes
   command: "{{ marathon_zk_acl_cmd }}"
   notify:
@@ -28,7 +28,7 @@
     - marathon
 
 - name: write marathon config file
-  sudo: yes
+  become: yes
   template:
     src: marathon.sysconfig.j2
     dest: /etc/sysconfig/marathon
@@ -39,7 +39,7 @@
     - marathon
 
 - name: create marathon store directory
-  sudo: yes
+  become: yes
   file:
     dest: /etc/marathon/store
     state: directory
@@ -54,7 +54,7 @@
 
 - name: copy ssl keystore
   when: marathon_keystore_path != ""
-  sudo: yes
+  become: yes
   copy:
     src: "{{ marathon_keystore_path }}"
     dest: /etc/sysconfig/marathon-keystore.jks

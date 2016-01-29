@@ -1,6 +1,6 @@
 ---
 - name: deploy root ca
-  sudo: yes
+  become: yes
   copy:
     src: ssl/cacert.pem
     dest: /etc/pki/ca-trust/source/anchors/cacert.pem

@@ -1,6 +1,6 @@
 ---
 - name: restart collectd
-  sudo: yes
+  become: yes
   service:
     name: collectd
     state: restarted

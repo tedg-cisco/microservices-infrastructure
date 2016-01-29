@@ -1,6 +1,6 @@
 ---
 - name: install marathon package
-  sudo: yes
+  become: yes
   yum:
     name: "{{ marathon_package }}"
     state: present
@@ -9,14 +9,14 @@
     - bootstrap
 
 - name: create consul acl for marathon
-  sudo: yes
+  become: yes
   run_once: yes
   command: consul-cli acl-update --token={{ consul_acl_master_token }} --name="Marathon ACL Token" --rule='key:marathon:write' {{ consul_acl_marathon_token }}
   tags:
     - marathon
 
 - name: install wait script
-  sudo: yes
+  become: yes
   template:
     src: marathon-wait-for-listen.sh.j2
     dest: /usr/local/bin/marathon-wait-for-listen.sh
@@ -27,7 +27,7 @@
 - include: conf.yml
 
 - name: configure marathon unit file
-  sudo: yes
+  become: yes
   replace:
     dest: /etc/systemd/system/marathon.service
     regexp: "=network.target"
@@ -39,7 +39,7 @@
     - marathon
 
 - name: configure marathon to wait for zookeeper before starting
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/systemd/system/marathon.service
     line: "ExecStartPre=/usr/local/bin/zookeeper-wait-for-listen.sh {{ marathon_zk_dns }}"
@@ -56,7 +56,7 @@
 - include: nginx-proxy.yml
 
 - name: deploy iptables configuration
-  sudo: yes
+  become: yes
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -69,7 +69,7 @@
     - marathon
 
 - name: deploy iptables template
-  sudo: yes
+  become: yes
   template:
     src: marathon-iptables.tmpl.j2
     dest: /etc/consul-template/templates/marathon-iptables.tmpl
@@ -81,7 +81,7 @@
 - include: collectd.yml
 
 - name: ensure consul.d is present
-  sudo: yes
+  become: yes
   file:
     path: "{{ consul_dir }}"
     state: directory
@@ -89,7 +89,7 @@
     - marathon
 
 - name: generate marathon consul service
-  sudo: yes
+  become: yes
   template:
     src: marathon-consul.j2
     dest: "{{ consul_dir }}/marathon.json"

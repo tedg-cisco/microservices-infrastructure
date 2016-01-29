@@ -1,6 +1,6 @@
 ---
 - name: copy the neutron port update script
-  sudo: yes
+  become: yes
   copy:
     src: neutron_port_update.py
     dest: /usr/local/bin
@@ -9,7 +9,7 @@
     - calico
 
 - name: unlock neutron ports to allow calico traffic
-  sudo: yes
+  become: yes
   shell: >
     /usr/local/bin/neutron_port_update.py
     "{{ calico_network }}"

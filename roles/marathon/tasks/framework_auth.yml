@@ -1,6 +1,6 @@
 ---
 - name: create secret file
-  sudo: yes
+  become: yes
   when: do_mesos_framework_auth|bool
   copy:
     dest: /etc/sysconfig/marathon-mesos-authentication-secret
@@ -12,7 +12,7 @@
 
 # remove if options become unset
 - name: remove secret file
-  sudo: yes
+  become: yes
   when: not do_mesos_framework_auth|bool
   file:
     dest: /etc/marathon/mesos_authentication_secret

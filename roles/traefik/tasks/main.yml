@@ -1,6 +1,6 @@
 ---
 - name: download traefik package
-  sudo: yes
+  become: yes
   get_url:
     url: '{{ traefik_download }}'
     sha256sum: '{{ traefik_sha256_checksum }}'
@@ -10,7 +10,7 @@
     - bootstrap
 
 - name: install traefik
-  sudo: yes
+  become: yes
   yum:
     name: /root/{{ traefik_filename }}
     state: present
@@ -19,7 +19,7 @@
     - bootstrap
 
 - name: make certificate directory
-  sudo: yes
+  become: yes
   file:
     dest: /etc/traefik/certs
     state: directory
@@ -27,7 +27,7 @@
     - traefik
 
 - name: deploy certs
-  sudo: yes
+  become: yes
   copy:
     src: '{{ item }}'
     dest: /etc/traefik/certs/
@@ -38,7 +38,7 @@
     - traefik
 
 - name: configure traefik
-  sudo: yes
+  become: yes
   template:
     src: traefik.toml.j2
     dest: /etc/traefik/traefik.toml
@@ -52,7 +52,7 @@
     - traefik
 
 - name: generate traefik consul service
-  sudo: yes
+  become: yes
   copy:
     src: 'traefik-consul.json'
     dest: '/etc/consul/traefik.json'

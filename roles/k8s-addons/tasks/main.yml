@@ -1,12 +1,12 @@
 ---
 - name: Write kube-system namespace manifest
-  sudo: yes
+  become: yes
   copy:
     src=kube-system.yaml
     dest="{{ kube_manifest_dir }}/kube-system.yaml"
 
 - name: Create kube-system namespace
-  sudo: yes
+  become: yes
   kube:
     resource: namespace
     name: kube-system
@@ -20,7 +20,7 @@
     - addons
 
 - name: Run kube-gen-token script to create system:dns {{ kube_token_dir }}/known_tokens.csv
-  sudo: yes
+  become: yes
   command: "{{ kube_script_dir }}/kube-gen-token.sh system:dns"
   environment:
     TOKEN_DIR: "{{ kube_token_dir }}"
@@ -34,7 +34,7 @@
     - addons
 
 - name: Run kube-gen-token script to create system:monitoring {{ kube_token_dir }}/known_tokens.csv
-  sudo: yes
+  become: yes
   command: "{{ kube_script_dir }}/kube-gen-token.sh system:monitoring"
   environment:
     TOKEN_DIR: "{{ kube_token_dir }}"
@@ -48,7 +48,7 @@
     - addons
 
 - name: Run kube-gen-token script to create system:logging {{ kube_token_dir }}/known_tokens.csv
-  sudo: yes
+  become: yes
   command: "{{ kube_script_dir }}/kube-gen-token.sh system:logging"
   environment:
     TOKEN_DIR: "{{ kube_token_dir }}"

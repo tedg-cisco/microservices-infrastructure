@@ -1,6 +1,6 @@
 ---
 - name: SkyDNS | Write pod file
-  sudo: yes
+  become: yes
   template:
     src: skydns-rc.yaml.j2
     dest: "{{ kube_manifest_dir }}/skydns-rc.yaml"
@@ -11,7 +11,7 @@
     - skydns
 
 #- name: SkyDNS | Write service file
-#  sudo: yes
+#  become: yes
 #  template:
 #    src: skydns-svc.yaml.j2
 #    dest: "{{ kube_manifest_dir }}/skydns-svc.yaml"
@@ -22,7 +22,7 @@
 #    - skydns
 
 - name: SkyDNS | Create or update replication controller
-  sudo: yes
+  become: yes
   kube:
     namespace: kube-system
     resource: rc
@@ -38,7 +38,7 @@
     - skydns
 
 #- name: SkyDNS | Create or update service
-#  sudo: yes
+#  become: yes
 #  kube:
 #    namespace: kube-system
 #    resource: svc

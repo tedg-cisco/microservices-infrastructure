@@ -2,7 +2,7 @@
 # some created directories may be redundant, but are kept in case anything else
 # changes, and to enable the picking and choosing of components/roles.
 - name: create consul configuration directory
-  sudo: yes
+  become: yes
   file:
     path: /etc/consul
     state: directory
@@ -13,7 +13,7 @@
     - nginx
 
 - name: create symlink to distributive nginx checklist
-  sudo: yes
+  become: yes
   file:
     state: link
     src: /usr/share/distributive/nginx.json
@@ -24,7 +24,7 @@
     - nginx
 
 - name: register distributive tests with consul
-  sudo: yes
+  become: yes
   copy:
     src: distributive-nginx-check.json
     dest: /etc/consul/

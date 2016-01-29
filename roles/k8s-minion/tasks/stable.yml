@@ -1,5 +1,5 @@
 - name: install kubernetes node
-  sudo: yes
+  become: yes
   yum:
     pkg="kubernetes-node-{{ kube_version }}"
     state=present

@@ -1,6 +1,6 @@
 ---
 - name: initialize vault
-  sudo: yes
+  become: yes
   run_once: yes
   changed_when: no
   command: curl -1 -X PUT -d '{{ vault_init_json }}' -k https://localhost:8200/v1/sys/init
@@ -9,7 +9,7 @@
     - vault
 
 - name: extract keys
-  sudo: yes
+  become: yes
   run_once: yes
   changed_when: no
   when: "'Vault is already initialized' not in vault_init_output.stdout"
@@ -19,7 +19,7 @@
     - vault
 
 - name: extract root token
-  sudo: yes
+  become: yes
   run_once: yes
   changed_when: no
   when: "'Vault is already initialized' not in vault_init_output.stdout"
@@ -29,7 +29,7 @@
     - vault
 
 - name: create unseal script
-  sudo: yes
+  become: yes
   changed_when: no
   when: "'Vault is already initialized' not in vault_init_output.stdout"
   template:

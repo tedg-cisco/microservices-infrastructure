@@ -1,6 +1,6 @@
 ---
 - name: create secret file
-  sudo: yes
+  become: yes
   when: do_mesos_framework_auth|bool
   copy:
     dest: /etc/chronos/mesos_authentication_secret
@@ -11,7 +11,7 @@
     - chronos
 
 - name: set principal and secret
-  sudo: yes
+  become: yes
   when: do_mesos_framework_auth|bool
   copy:
     dest: /etc/chronos/conf/{{ item.key }}
@@ -28,7 +28,7 @@
 
 # remove if option become unset
 - name: remove secret file
-  sudo: yes
+  become: yes
   when: not do_mesos_framework_auth|bool
   file:
     dest: /etc/chronos/mesos_authentication_secret
@@ -37,7 +37,7 @@
     - restart chronos
 
 - name: remove principal and secret
-  sudo: yes
+  become: yes
   when: not do_mesos_framework_auth|bool
   file:
     dest: /etc/chronos/conf/{{ item }}

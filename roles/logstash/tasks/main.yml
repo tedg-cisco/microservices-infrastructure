@@ -1,6 +1,6 @@
 ---
 - name: create configuration directory
-  sudo: yes
+  become: yes
   file:
     path: /etc/logstash.d
     state: directory
@@ -9,7 +9,7 @@
     - logstash
 
 - name: configure logstash
-  sudo: yes
+  become: yes
   template:
     src: logstash.conf.j2
     dest: /etc/logstash.d/logstash.conf
@@ -19,14 +19,14 @@
     - logstash
 
 - name: ensure logstash docker image is present
-  sudo: yes
+  become: yes
   command: /usr/bin/docker pull {{ logstash_image }}:{{ logstash_image_tag }}
   tags:
     - logstash
     - bootstrap
 
 - name: generate systemd service file
-  sudo: yes
+  become: yes
   template:
     src: logstash-service.j2
     dest: /usr/lib/systemd/system/logstash.service
@@ -37,7 +37,7 @@
     - logstash
 
 - name: check if logstash syslog port is authorized
-  sudo: yes
+  become: yes
   shell: semanage port --list | grep "^syslogd_port_t.*tcp.*1514"
   register: selinux_syslog_port_check
   failed_when: no
@@ -47,14 +47,14 @@
     - logstash
 
 - name: authorize logstash syslog port
-  sudo: yes
+  become: yes
   shell: semanage port -a -t syslogd_port_t -p tcp 1514
   when: selinux_syslog_port_check.rc is defined and selinux_syslog_port_check.rc != 0
   tags:
     - logstash
 
 - name: forward all logs from rsyslog to logstash
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/rsyslog.conf
     line: '*.* @@localhost:1514'

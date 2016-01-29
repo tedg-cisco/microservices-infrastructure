@@ -1,6 +1,6 @@
 ---
 - name: add mesosphere repository
-  sudo: yes
+  become: yes
   yum:
     name:  http://repos.mesosphere.io/el/7/noarch/RPMS/mesosphere-el-repo-7-1.noarch.rpm
     state: present
@@ -8,7 +8,7 @@
     - chronos
 
 - name: install chronos package
-  sudo: yes
+  become: yes
   yum:
     name: "{{ chronos_package }}"
     state: present
@@ -29,7 +29,7 @@
   command: "/usr/local/bin/zookeeper-wait-for-listen.sh localhost"
 
 - name: create zookeeper acl
-  sudo: yes
+  become: yes
   run_once: yes
   command: "{{ chronos_zk_acl_cmd }}"
   notify:
@@ -44,7 +44,7 @@
     - chronos
 
 - name: create chronos conf directory
-  sudo: yes
+  become: yes
   file:
     dest: /etc/chronos/conf
     state: directory
@@ -54,7 +54,7 @@
 - include: framework_auth.yml
 
 - name: configure chronos unit file
-  sudo: yes
+  become: yes
   replace:
     dest: /usr/lib/systemd/system/chronos.service
     regexp: "=network.target"
@@ -66,7 +66,7 @@
     - chronos
 
 - name: configure chronos to wait for zookeeper before starting
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /usr/lib/systemd/system/chronos.service
     line: "ExecStartPre=/usr/local/bin/zookeeper-wait-for-listen.sh {{ chronos_zk_dns }}"
@@ -79,7 +79,7 @@
     - chronos
 
 - name: fix chronos bin file
-  sudo: yes
+  become: yes
   replace:
     dest: /usr/bin/chronos
     regexp: '\[\[ -s /etc/mesos/zk \]\]'
@@ -90,7 +90,7 @@
     - chronos
 
 - name: set key/value options
-  sudo: yes
+  become: yes
   when: item.value != ""
   copy:
     dest: /etc/chronos/conf/{{ item.key }}
@@ -112,7 +112,7 @@
     - chronos
 
 - name: enable and start chronos
-  sudo: yes
+  become: yes
   service:
     enabled: yes
     name: chronos
@@ -125,7 +125,7 @@
 - include: nginx-proxy.yml
 
 - name: deploy iptables configuration
-  sudo: yes
+  become: yes
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -138,7 +138,7 @@
     - chronos
 
 - name: deploy iptables template
-  sudo: yes
+  become: yes
   template:
     src: chronos-iptables.tmpl.j2
     dest: /etc/consul-template/templates/chronos-iptables.tmpl
@@ -148,7 +148,7 @@
     - chronos
 
 - name: ensure consul.d is present
-  sudo: yes
+  become: yes
   file:
     path: "{{ consul_dir }}"
     state: directory
@@ -156,7 +156,7 @@
     - chronos
 
 - name: generate chronos consul service
-  sudo: yes
+  become: yes
   template:
     src: chronos-consul.j2
     dest: "{{ consul_dir }}/chronos.json"

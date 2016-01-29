@@ -1,6 +1,6 @@
 ---
 - name: deploy nginx template 
-  sudo: yes
+  become: yes
   template:
     src: consul.nginx.j2
     dest: /etc/consul/consul.nginx
@@ -10,7 +10,7 @@
     - consul
 
 - name: deploy nginx service
-  sudo: yes
+  become: yes
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -25,14 +25,14 @@
     - consul
 
 - name: install nginx template
-  sudo: yes
+  become: yes
   command: consul-cli kv-write --token={{ consul_acl_secure_token }} secure/service/nginx/templates/consul @/etc/consul/consul.nginx
   when: nginx_template.changed
   tags:
     - consul
     
 - name: install nginx admin password
-  sudo: yes
+  become: yes
   run_once: yes
   command: consul-cli kv-write --token={{ consul_acl_secure_token }} secure/service/nginx/auth/users/admin '{{ nginx_admin_password_encrypted }}'
   when: nginx_admin_password_encrypted is defined
@@ -40,7 +40,7 @@
     - consul
 
 - name: enable nginx-consul
-  sudo: yes
+  become: yes
   service:
     name: nginx-consul
     enabled: yes

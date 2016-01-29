@@ -1,6 +1,6 @@
 ---
 - name: Kube-UI | Write pod file
-  sudo: yes
+  become: yes
   copy:
     src: kube-ui-rc.yaml
     dest: "{{ kube_manifest_dir }}/kube-ui-rc.yaml"
@@ -11,7 +11,7 @@
     - kube-ui
 
 - name: Kube-UI | Write service file
-  sudo: yes
+  become: yes
   copy:
     src: kube-ui-svc.yaml
     dest: "{{ kube_manifest_dir }}/kube-ui-svc.yaml"
@@ -22,7 +22,7 @@
     - kube-ui
 
 - name: Kube-UI | Create or update replication controller
-  sudo: yes
+  become: yes
   kube:
     namespace: kube-system
     resource: rc
@@ -38,7 +38,7 @@
     - kube-ui
 
 - name: Kube-UI | Create or update service
-  sudo: yes
+  become: yes
   kube:
     namespace: kube-system
     resource: svc

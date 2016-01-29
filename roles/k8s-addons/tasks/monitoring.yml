@@ -1,6 +1,6 @@
 ---
 - name: Monitoring | Influxdb | Write controller file
-  sudo: yes
+  become: yes
   copy:
     src: influxdb-grafana-controller.yaml
     dest: "{{ kube_manifest_dir }}/influxdb-grafana-controller.yaml"
@@ -11,7 +11,7 @@
     - monitoring
 
 - name: Monitoring | Influxdb | Write service file
-  sudo: yes
+  become: yes
   copy:
     src: influxdb-service.yaml
     dest: "{{ kube_manifest_dir }}/influxdb-service.yaml"
@@ -22,7 +22,7 @@
     - monitoring
 
 - name: Monitoring | Grafana | Write service file
-  sudo: yes
+  become: yes
   copy:
     src: grafana-service.yaml
     dest: "{{ kube_manifest_dir }}/grafana-service.yaml"
@@ -33,7 +33,7 @@
     - monitoring
 
 - name: Monitoring | Heapster | Write controller file
-  sudo: yes
+  become: yes
   copy:
     src: heapster-controller.yaml
     dest: "{{ kube_manifest_dir }}/heapster-controller.yaml"
@@ -44,7 +44,7 @@
     - monitoring
 
 - name: Monitoring | Heapster | Write service file
-  sudo: yes
+  become: yes
   copy:
     src: heapster-service.yaml
     dest: "{{ kube_manifest_dir }}/heapster-service.yaml"
@@ -55,7 +55,7 @@
     - monitoring
 
 - name: Monitoring | Influxdb | Create/update replication controller
-  sudo: yes
+  become: yes
   kube:
     namespace: kube-system
     resource: rc
@@ -71,7 +71,7 @@
     - monitoring
 
 - name: Monitoring | Influxdb | Create/update service
-  sudo: yes
+  become: yes
   kube:
     namespace: kube-system
     resource: svc
@@ -87,7 +87,7 @@
     - monitoring
 
 - name: Monitoring | Grafana | Create/update service
-  sudo: yes
+  become: yes
   kube:
     namespace: kube-system
     resource: svc
@@ -103,7 +103,7 @@
     - monitoring
 
 - name: Monitoring | Heapster | Create/update replication controller
-  sudo: yes
+  become: yes
   kube:
     namespace: kube-system
     resource: rc
@@ -119,7 +119,7 @@
     - monitoring
 
 - name: Monitoring | Heapster | Create/update service
-  sudo: yes
+  become: yes
   kube:
     namespace: kube-system
     resource: svc

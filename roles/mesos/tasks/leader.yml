@@ -1,6 +1,6 @@
 ---
 - name: install leader configuration
-  sudo: yes
+  become: yes
   yum:
     name: https://bintray.com/artifact/download/asteris/mantl-rpm/mesos-master-{{ mesos_version }}-{{ mesos_master_iteration }}.noarch.rpm
     state: present
@@ -9,7 +9,7 @@
     - bootstrap
 
 - name: configure mesos-master unit file
-  sudo: yes
+  become: yes
   replace:
     dest: /etc/systemd/system/mesos-master.service
     regexp: "=network.target"
@@ -21,7 +21,7 @@
     - mesos
 
 - name: configure mesos-master
-  sudo: yes
+  become: yes
   template:
     src: mesos-master.sysconfig.j2
     dest: /etc/sysconfig/mesos-master
@@ -31,7 +31,7 @@
     - mesos
 
 - name: write leader credentials
-  sudo: yes
+  become: yes
   when: do_mesos_framework_auth|bool or do_mesos_follower_auth|bool
   template:
     src: master-credentials.j2
@@ -43,7 +43,7 @@
     - mesos
 
 - name: delete leader credentials
-  sudo: yes
+  become: yes
   when: not do_mesos_framework_auth|bool and not do_mesos_follower_auth|bool
   file:
     dest: /etc/sysconfig/mesos-credentials
@@ -65,7 +65,7 @@
   command: "/usr/local/bin/zookeeper-wait-for-listen.sh localhost"
 
 - name: create zookeeper acl
-  sudo: yes
+  become: yes
   run_once: yes
   command: "{{ mesos_zk_acl_cmd }}"
   notify:
@@ -80,7 +80,7 @@
     - mesos
 
 - name: deploy iptables configuration
-  sudo: yes
+  become: yes
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -93,7 +93,7 @@
     - mesos
 
 - name: deploy iptables template
-  sudo: yes
+  become: yes
   template:
     src: mesos-leader-iptables.tmpl.j2
     dest: /etc/consul-template/templates/mesos-leader-iptables.tmpl
@@ -103,7 +103,7 @@
     - mesos
 
 - name: install collectd mesos-master plugin
-  sudo: yes
+  become: yes
   copy:
     src: mesos-master.py
     dest: /usr/share/collectd/plugins
@@ -113,7 +113,7 @@
     - collectd
 
 - name: configure collectd mesos-master plugin
-  sudo: yes
+  become: yes
   template:
     src: mesos-master.conf.j2
     dest: /etc/collectd.d/mesos-master.conf

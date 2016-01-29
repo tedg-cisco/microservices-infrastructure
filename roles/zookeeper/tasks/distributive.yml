@@ -2,7 +2,7 @@
 # some created directories may be redundant, but are kept in case anything else
 # changes, and to enable the picking and choosing of components/roles.
 - name: create consul configuration directory
-  sudo: yes
+  become: yes
   file:
     path: /etc/consul
     state: directory
@@ -13,7 +13,7 @@
     - zookeeper
 
 - name: create symlink to distributive zookeeper checklist
-  sudo: yes
+  become: yes
   file:
     state: link
     src: /usr/share/distributive/zookeeper.json
@@ -24,7 +24,7 @@
     - zookeeper
 
 - name: register distributive tests with consul
-  sudo: yes
+  become: yes
   template:
     src: distributive-zookeeper-check.json.j2
     dest: /etc/consul/distributive-zookeeper-check.json

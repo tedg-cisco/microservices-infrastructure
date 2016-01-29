@@ -1,6 +1,6 @@
 ---
 - name: set logrotate interval to daily
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/logrotate.conf
     regexp: '^weekly'
@@ -10,7 +10,7 @@
     - logrotate
 
 - name: set logrotate retention period to 7 days
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/logrotate.conf
     regexp: '^rotate 4'
@@ -20,7 +20,7 @@
     - logrotate
 
 - name: configure mesos logrotate
-  sudo: yes
+  become: yes
   copy:
     src: mesos
     dest: /etc/logrotate.d/mesos
@@ -31,7 +31,7 @@
     - logrotate
 
 - name: create mesos archive
-  sudo: yes
+  become: yes
   file:
     path: /var/log/mesos/archive
     mode: 0755
@@ -40,7 +40,7 @@
     - logrotate
 
 - name: configure docker logrotate
-  sudo: yes
+  become: yes
   copy:
     src: docker
     dest: /etc/logrotate.d/docker
@@ -51,7 +51,7 @@
     - logrotate
 
 - name: create docker archive
-  sudo: yes
+  become: yes
   file:
     path: /var/log/docker/archive
     mode: 0755
@@ -60,7 +60,7 @@
     - logrotate
 
 - name: configure zookeeper logrotate
-  sudo: yes
+  become: yes
   copy:
     src: zookeeper
     dest: /etc/logrotate.d/zookeeper
@@ -72,7 +72,7 @@
     - logrotate
 
 - name: create zookeeper archive
-  sudo: yes
+  become: yes
   file:
     path: /var/log/zookeeper/archive
     mode: 0755

@@ -1,6 +1,6 @@
 ---
 - name: SkyDNS | generate systemd unit file
-  sudo: yes
+  become: yes
   template:
     src: skydns.service.j2
     dest: /usr/lib/systemd/system/skydns.service
@@ -14,7 +14,7 @@
     - skydns
 
 - name: SkyDNS | put env file
-  sudo: yes
+  become: yes
   template:
     src: skydns.env.j2
     dest: /etc/default/skydns.env

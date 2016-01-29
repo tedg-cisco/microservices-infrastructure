@@ -1,6 +1,6 @@
 ---
 - name: install consul-template
-  sudo: yes
+  become: yes
   yum:
     name: https://bintray.com/artifact/download/asteris/mantl-rpm/consul-template-0.12.2-1.x86_64.rpm
     state: present
@@ -9,7 +9,7 @@
     - bootstrap
 
 - name: configure consul-template
-  sudo: yes
+  become: yes
   copy:
     src: consul.hcl
     dest: /etc/consul-template/config.d
@@ -19,7 +19,7 @@
     - consul-template
 
 - name: enable consul-template
-  sudo: yes
+  become: yes
   service:
     name: consul-template
     enabled: yes

@@ -1,6 +1,6 @@
 ---
 - name: reconfig docker
-  sudo: yes
+  become: yes
   command: /bin/true
   notify:
     - stop docker
@@ -8,24 +8,24 @@
     - start docker
 
 - name: restart flannel
-  sudo: yes
+  become: yes
   service:
     name: flanneld
     state: restarted
 
 - name: stop docker
-  sudo: yes
+  become: yes
   service:
     name: docker
     state: stopped
 
 - name: delete docker0
-  sudo: yes
+  become: yes
   command: ip link delete docker0
   ignore_errors: yes
 
 - name: start docker
-  sudo: yes
+  become: yes
   service:
     name: docker
     state: started

@@ -6,7 +6,7 @@
 #    force=yes
 
 - name: certs | install cert generation script
-  sudo: yes
+  become: yes
   copy:
     src=make-ca-cert.sh
     dest={{ kube_script_dir }}
@@ -15,7 +15,7 @@
 
 # FIXME This only generates a cert for one master...
 - name: certs | run cert generation script
-  sudo: yes
+  become: yes
   command:
     "{{ kube_script_dir }}/make-ca-cert.sh {{ inventory_hostname }}"
   args:
@@ -29,7 +29,7 @@
     CERT_GROUP: "{{ kube_cert_group }}"
 
 - name: certs | check certificate permissions
-  sudo: yes
+  become: yes
   file:
     path={{ item }}
     group={{ kube_cert_group }}

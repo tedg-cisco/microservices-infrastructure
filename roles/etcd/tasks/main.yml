@@ -1,6 +1,6 @@
 ---
 - name: install etcd
-  sudo: yes
+  become: yes
   yum:
     name: etcd-{{ etcd_version }}
     state: present
@@ -8,7 +8,7 @@
     - etcd
 
 - name: generate systemd environment file
-  sudo: yes
+  become: yes
   template:
     src: etcd.conf.j2
     dest: /etc/etcd/etcd.conf
@@ -22,7 +22,7 @@
     - etcd
 
 - name: install etcd launch script
-  sudo: yes
+  become: yes
   copy:
     src: etcd-service-start.sh
     dest: /usr/local/bin
@@ -33,7 +33,7 @@
     - etcd
 
 - name: create etcd.service.d
-  sudo: yes
+  become: yes
   file:
     dest: /etc/systemd/system/etcd.service.d
     state: directory
@@ -41,7 +41,7 @@
     - etcd
 
 - name: create local etcd service override
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/systemd/system/etcd.service.d/local.conf
     content: |
@@ -54,7 +54,7 @@
     - etcd
 
 - name: install consul check script
-  sudo: yes
+  become: yes
   template:
     src: consul-check-etcd-member
     dest: /usr/local/bin
@@ -64,7 +64,7 @@
     - etcd
 
 - name: register etcd with consul
-  sudo: yes
+  become: yes
   copy:
     src: etcd-service.json
     dest: /etc/consul
@@ -75,7 +75,7 @@
     - etcd
 
 - name: enable and start etcd
-  sudo: yes
+  become: yes
   service:
     name: etcd
     enabled: yes

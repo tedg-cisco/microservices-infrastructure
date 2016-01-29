@@ -1,6 +1,6 @@
 ---
 - name: install latest flannel
-  sudo: yes
+  become: yes
   yum:
     pkg=flannel
     state=latest

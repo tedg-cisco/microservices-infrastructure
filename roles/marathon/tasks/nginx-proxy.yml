@@ -1,6 +1,6 @@
 ---
 - name: copy nginx configuration
-  sudo: yes
+  become: yes
   template:
     src: marathon.nginx.j2
     dest: /etc/marathon/marathon.nginx
@@ -10,20 +10,20 @@
     - marathon
 
 - name: configure nginx
-  sudo: yes
+  become: yes
   command: consul-cli kv-write --token={{ consul_acl_secure_token }} secure/service/nginx/templates/marathon @/etc/marathon/marathon.nginx
   tags:
     - marathon
 
 - name: ensure consul-nginx docker image is present
-  sudo: yes
+  become: yes
   command: /usr/bin/docker pull {{ consul_nginx_image }}:{{ consul_nginx_image_tag }}
   tags:
     - marathon
     - bootstrap
 
 - name: configure nginx-marathon
-  sudo: yes
+  become: yes
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -39,7 +39,7 @@
     - marathon
 
 - name: enable nginx-marathon
-  sudo: yes
+  become: yes
   service:
     name: nginx-marathon
     enabled: yes

@@ -1,12 +1,12 @@
 ---
 - name: reload vault
-  sudo: yes
+  become: yes
   command: systemctl reload vault
   notify:
     - wait for vault to listen
 
 - name: restart vault
-  sudo: yes
+  become: yes
   command: systemctl restart vault
   notify:
     - wait for vault to listen

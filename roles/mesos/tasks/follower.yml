@@ -1,6 +1,6 @@
 ---
 - name: install follower configuration
-  sudo: yes
+  become: yes
   yum:
     name: https://bintray.com/artifact/download/asteris/mantl-rpm/mesos-agent-{{ mesos_version }}-{{ mesos_agent_iteration }}.noarch.rpm
     state: present
@@ -9,7 +9,7 @@
     - bootstrap
 
 - name: configure mesos-agent
-  sudo: yes
+  become: yes
   template:
     src: mesos-agent.sysconfig.j2
     dest: /etc/sysconfig/mesos-agent
@@ -19,7 +19,7 @@
 
 - name: write credential
   when: do_mesos_follower_auth|bool
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/sysconfig/mesos-agent-credential
     content: "{{ mesos_follower_principal }} {{ mesos_follower_secret }}"
@@ -30,7 +30,7 @@
 
 - name: delete credential
   when: not do_mesos_follower_auth|bool
-  sudo: yes
+  become: yes
   file:
     dest: /etc/sysconfig/mesos-agent-credential
     state: absent
@@ -40,7 +40,7 @@
 
 - name: write mantl-api credential
   when: do_mesos_framework_auth|bool
-  sudo: yes
+  become: yes
   template:
     src: mantl-api-credential.j2
     dest: /etc/sysconfig/mantl-api
@@ -50,7 +50,7 @@
 
 - name: delete mantl-api credential
   when: not do_mesos_framework_auth|bool
-  sudo: yes
+  become: yes
   file:
     dest: /etc/sysconfig/mantl-api
     state: absent
@@ -58,7 +58,7 @@
     - mesos
 
 - name: install collectd mesos-slave plugin
-  sudo: yes
+  become: yes
   copy:
     src: mesos-slave.py
     dest: /usr/share/collectd/plugins
@@ -68,7 +68,7 @@
     - collectd
 
 - name: configure collectd mesos-slave plugin
-  sudo: yes
+  become: yes
   template:
     src: mesos-slave.conf.j2
     dest: /etc/collectd.d/mesos-slave.conf

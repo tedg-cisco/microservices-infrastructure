@@ -1,10 +1,10 @@
 ---
 - name: reload systemd
-  sudo: yes
+  become: yes
   command: systemctl daemon-reload
 
 - name: reload consul
-  sudo: yes
+  become: yes
   command: systemctl reload consul
   notify:
     - wait for consul to listen
@@ -13,5 +13,5 @@
   command: /usr/local/bin/consul-wait-for-leader.sh
 
 - name: reload consul-template
-  sudo: yes
+  become: yes
   command: systemctl reload consul-template

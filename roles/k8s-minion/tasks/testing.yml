@@ -1,5 +1,5 @@
 - name: install latest kubernetes node
-  sudo: yes
+  become: yes
   yum:
     pkg="kubernetes-node"
     state=latest

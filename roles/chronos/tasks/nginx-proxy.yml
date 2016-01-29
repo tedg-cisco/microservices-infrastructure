@@ -1,6 +1,6 @@
 ---
 - name: copy nginx configuration
-  sudo: yes
+  become: yes
   template:
     src: chronos.nginx.j2
     dest: /etc/chronos/chronos.nginx
@@ -10,13 +10,13 @@
     - chronos
 
 - name: configure nginx
-  sudo: yes
+  become: yes
   command: consul-cli kv-write --token={{ consul_acl_secure_token }} secure/service/nginx/templates/chronos @/etc/chronos/chronos.nginx
   tags:
     - chronos
 
 - name: configure nginx-chronos
-  sudo: yes
+  become: yes
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -32,7 +32,7 @@
     - chronos
 
 - name: enable nginx-chronos
-  sudo: yes
+  become: yes
   service:
     name: nginx-chronos
     enabled: yes

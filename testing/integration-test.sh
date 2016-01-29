@@ -42,7 +42,7 @@ function skip_if_failed() {
 
 }
 
-./security-setup
+echo "Running security-setup without TTY"; ./security-setup < /dev/null
 
 skip_if_failed "terraform get"
 skip_if_failed "terraform apply -state=$TERRAFORM_STATE_ROOT/terraform.tfstate"

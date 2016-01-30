@@ -1,6 +1,5 @@
-
-# dependency for cloud-utils-growpart
-# which is required if we have GROWPART=yes (default) in /etc/sysconfig/docker-storage-setup
+# dependency for cloud-utils-growpart, which is required if we have GROWPART=yes
+# (which is the default in /etc/sysconfig/docker-storage-setup)
 - name: install cloud-utils-growpart package
   sudo: yes
   yum:

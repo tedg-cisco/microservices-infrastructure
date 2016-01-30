@@ -3,44 +3,44 @@
   gather_facts: no
   serial: "{{ serial | default(1) }}"
   tasks:
+    - name: clean yum
+      become: yes
+      command: yum clean all
+      tags:
+        - skip_ansible_lint
 
-  - name: clean yum
-    sudo: yes
-    command: yum clean all
-    tags:
-      - skip_ansible_lint
+    - name: refresh yum cache
+      become: yes
+      command: yum makecache
+      tags:
+        - skip_ansible_lint
 
-  - name: refresh yum cache
-    sudo: yes
-    command: yum makecache
-    tags:
-      - skip_ansible_lint
+    - name: upgrade kernel package
+      become: yes
+      yum:
+        name: kernel
+        state: latest
+      register: kernel
 
-  - name: upgrade kernel package
-    sudo: yes
-    yum:
-      name: kernel
-      state: latest
-    register: kernel
+    - name: upgrade all packages
+      become: yes
+      yum:
+        name: "*"
+        state: latest
 
-  - name: upgrade all packages
-    sudo: yes
-    yum:
-      name: "*"
-      state: latest
+    # Rebooting during the ansible_local provisioning stage breaks Packer builds
+    - name: reboot host
+      become: yes
+      shell: nohup bash -c "sleep 2s && reboot" &
+      register: did_reboot
+      when: "{{ kernel.changed and not (packer | default(false)) }}"
 
-  - name: reboot host
-    sudo: yes
-    shell: nohup bash -c "sleep 2s && reboot" &
-    register: reboot
-    when: kernel.changed
-
-  - name: wait for host boot
-    local_action:
-      module: wait_for
-      host: "{{ ansible_ssh_host }}"
-      port: 22
-      delay: "{{ boot_wait | default(60) }}"
-      timeout: 120
-      state: started
-    when: reboot.changed
+    - name: wait for host boot
+      local_action:
+        module: wait_for
+        host: "{{ ansible_ssh_host | default(inventory_hostname) }}"
+        port: "{{ ansible_ssh_port | default(22) }}"
+        delay: "{{ boot_wait | default(60) }}"
+        timeout: "{{ boot_timeout | default(120) }}"
+        state: started
+      when: did_reboot.changed
